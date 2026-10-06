@@ -1,23 +1,22 @@
 {
   "id": "gurps-roll-stats",
   "title": "GURPS Roll Statistics",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "compatibility": {
     "minimum": "14",
-    "verified": "14",
-    "maximum": "14"
+    "verified": "14"
   },
   "description": "<p>Tracks GURPS roll results: success rates, criticals and margins, by character and session.</p>",
   "authors": [
     {
       "name": "David Berkompas",
       "email": "david.berkompas@gmail.com",
-      "url": "https://github.com/BoomerET/gurps-roll-stats",
+      "url": "https://github.com/BoomerET",
       "discord": "BoomerET",
       "flags": {}
     }
   ],
-  "url": "https://github.com/BoomerET/learn_n5ba_foundryvtt",
+  "url": "https://github.com/BoomerET/gurps-roll-stats",
   "esmodules": ["scripts/main.js"],
   "relationships": {
     "systems": [{ "id": "gurps", "type": "system" }]
@@ -26,4 +25,3 @@
     "canUpload": true
   }
 }
-
