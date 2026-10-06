@@ -1,0 +1,40 @@
+<section class="grs-content">
+  {{#if hasRows}}
+    <table class="grs-table">
+      <thead>
+        <tr>
+          <th class="name">Character</th>
+          <th>Rolls</th>
+          <th>Success</th>
+          <th>Avg 3d6</th>
+          <th>Crit Success</th>
+          <th>Crit Failure</th>
+          <th>Best</th>
+          <th>Worst</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each rows}}
+          <tr>
+            <td class="name">{{name}}</td>
+            <td>{{rolls}}</td>
+            <td>{{successRate}}</td>
+            <td>{{averageRoll}}</td>
+            <td>{{critSuccesses}}</td>
+            <td>{{critFailures}}</td>
+            <td>{{best}}</td>
+            <td>{{worst}}</td>
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  {{else}}
+    <p class="grs-empty">No GURPS rolls recorded yet. Roll a skill or attribute from a character sheet.</p>
+  {{/if}}
+
+  <footer class="grs-footer">
+    <button type="button" data-action="refresh">
+      <i class="fa-solid fa-rotate"></i> Refresh
+    </button>
+  </footer>
+</section>

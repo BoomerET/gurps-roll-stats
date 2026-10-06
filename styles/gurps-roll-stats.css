@@ -1,0 +1,50 @@
+/* Statistics window. Everything is scoped under .gurps-roll-stats
+   so these rules can't affect the rest of Foundry. */
+.gurps-roll-stats .grs-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.gurps-roll-stats .grs-table {
+  width: 100%;
+  margin: 0;
+  border-collapse: collapse;
+}
+
+.gurps-roll-stats .grs-table th,
+.gurps-roll-stats .grs-table td {
+  padding: 4px 6px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.gurps-roll-stats .grs-table .name {
+  text-align: left;
+}
+
+.gurps-roll-stats .grs-table tbody tr:nth-child(even) {
+  background: rgba(127, 127, 127, 0.12);
+}
+
+.gurps-roll-stats .grs-empty {
+  margin: 1rem 0;
+  text-align: center;
+  font-style: italic;
+}
+
+.gurps-roll-stats .grs-footer {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.gurps-roll-stats .grs-footer button {
+  width: auto;
+}
+
+/* Announcement messages in chat. */
+.grs-announcement {
+  padding: 4px 6px;
+  border-left: 4px solid #b22222;
+  font-size: 1.05em;
+}

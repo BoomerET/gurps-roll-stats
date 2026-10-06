@@ -1,7 +1,7 @@
 {
   "id": "gurps-roll-stats",
   "title": "GURPS Roll Statistics",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "compatibility": {
     "minimum": "14",
     "verified": "14"
@@ -11,13 +11,14 @@
     {
       "name": "David Berkompas",
       "email": "david.berkompas@gmail.com",
-      "url": "https://github.com/BoomerET",
+      "url": "https://www.n5ba.net",
       "discord": "BoomerET",
       "flags": {}
     }
   ],
   "url": "https://github.com/BoomerET/gurps-roll-stats",
   "esmodules": ["scripts/main.js"],
+  "styles": ["styles/gurps-roll-stats.css"],
   "relationships": {
     "systems": [{ "id": "gurps", "type": "system" }]
   },

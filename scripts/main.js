@@ -1,8 +1,5 @@
-const MODULE_ID = "gurps-roll-stats";
-
-function log(...args) {
-  if (game.settings.get(MODULE_ID, "debug")) console.log(`${MODULE_ID} |`, ...args);
-}
+import { MODULE_ID, log, getStats } from "./stats.js";
+import { RollStatsApp } from "./stats-app.js";
 
 Hooks.once("init", () => {
   game.settings.register(MODULE_ID, "badMissThreshold", {
@@ -16,11 +13,29 @@ Hooks.once("init", () => {
     scope: "client", config: true, type: Boolean, default: false
   });
 
-  // A module "API": functions other code (and you, in the console) can call.
-  game.modules.get(MODULE_ID).api = { getStats };
+  // The module's API, for macros and the console.
+  game.modules.get(MODULE_ID).api = {
+    getStats,
+    open: () => RollStatsApp.open()
+  };
 });
 
-// STEP 1: Before a GURPS roll message is saved, attach the roll's results as a flag.
+// Add a "Roll Statistics" button to the Token tools on the left of the screen.
+Hooks.on("getSceneControlButtons", (controls) => {
+  const tokens = controls.tokens;
+  if (!tokens) return;
+  tokens.tools.gurpsRollStats = {
+    name: "gurpsRollStats",
+    title: "Roll Statistics",
+    icon: "fa-solid fa-chart-simple",
+    button: true,
+    order: Object.keys(tokens.tools).length,
+    onChange: () => RollStatsApp.open()
+  };
+});
+
+// Before a GURPS roll message is saved, attach the roll's results as a flag.
+// Runs only on the roller's computer.
 Hooks.on("preCreateChatMessage", (message) => {
   if (!message.content?.includes("roll-message")) return;
 
@@ -41,11 +56,16 @@ Hooks.on("preCreateChatMessage", (message) => {
   log("recorded", record);
 });
 
-// The announcements, now reading our own flag instead of GURPS internals.
+// Runs on every connected computer when a message arrives.
 Hooks.on("createChatMessage", async (message) => {
-  if (!message.isAuthor) return;
   const r = message.getFlag(MODULE_ID, "roll");
   if (!r) return;
+
+  // Everyone's statistics window should update, so this runs on every computer.
+  RollStatsApp.refreshIfOpen();
+
+  // ...but only the roller posts the announcement.
+  if (!message.isAuthor) return;
 
   const threshold = game.settings.get(MODULE_ID, "badMissThreshold");
   const who = message.speaker.alias ?? "Someone";
@@ -57,38 +77,11 @@ Hooks.on("createChatMessage", async (message) => {
   if (!text) return;
 
   await ChatMessage.create({
-    content: `<div class="n5ba-announcement">${text}</div>`,
+    content: `<div class="grs-announcement">${text}</div>`,
     speaker: message.speaker,
     flags: { [MODULE_ID]: { announcement: true } }
   });
 });
 
-// STEP 2: Scan the chat log and add up the recorded rolls for each character.
-function getStats({ since = 0 } = {}) {
-  const byActor = {};
-  for (const message of game.messages) {
-    const r = message.getFlag(MODULE_ID, "roll");
-    if (!r || message.timestamp < since) continue;
-
-    const key = message.speaker.actor ?? message.speaker.alias;
-    const s = (byActor[key] ??= {
-      name: message.speaker.alias ?? "Unknown",
-      rolls: 0, successes: 0, critSuccesses: 0, critFailures: 0,
-      diceTotal: 0, bestMargin: null, worstMargin: null
-    });
-
-    s.rolls++;
-    s.diceTotal += r.total;
-    if (!r.failure) s.successes++;
-    if (r.critSuccess) s.critSuccesses++;
-    if (r.critFailure) s.critFailures++;
-    if (s.bestMargin === null || r.margin > s.bestMargin) s.bestMargin = r.margin;
-    if (s.worstMargin === null || r.margin < s.worstMargin) s.worstMargin = r.margin;
-  }
-
-  return Object.values(byActor).map(s => ({
-    ...s,
-    averageRoll: Number((s.diceTotal / s.rolls).toFixed(1)),
-    successRate: `${Math.round((100 * s.successes) / s.rolls)}%`
-  }));
-}
+// Deleting roll messages changes the statistics too.
+Hooks.on("deleteChatMessage", () => RollStatsApp.refreshIfOpen());
